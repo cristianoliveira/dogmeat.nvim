@@ -1,0 +1,13 @@
+# Generated help tags
+doc/tags
+
+# Lua coverage reports
+luacov.*
+
+# Test artifacts
+*.tmp
+*.log
+
+# Nix
+result
+.direnv/

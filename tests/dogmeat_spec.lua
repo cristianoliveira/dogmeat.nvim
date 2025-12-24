@@ -1,3 +1,5 @@
+local assert = require("luassert")
+
 describe("dogmeat", function()
   local dogmeat
 

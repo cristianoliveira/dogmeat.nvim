@@ -1,0 +1,93 @@
+*dogmeat.txt*  AI companion for Neovim
+
+==============================================================================
+CONTENTS                                                    *dogmeat-contents*
+
+    1. Introduction ...................... |dogmeat-introduction|
+    2. Installation ...................... |dogmeat-installation|
+    3. Configuration ..................... |dogmeat-configuration|
+    4. Commands .......................... |dogmeat-commands|
+    5. Functions ......................... |dogmeat-functions|
+    6. License ........................... |dogmeat-license|
+
+==============================================================================
+INTRODUCTION                                            *dogmeat-introduction*
+
+Dogmeat is an all-in-one AI companion for Neovim.
+
+Not the smartest tool in the shed.
+- It stays out of your way and helps when called.
+- Perfect for fetching quests.
+- Never judge you.
+- Good boy.
+
+An homage to the most iconic Fallout's companion.
+
+Features:
+- AI-powered code completion using aichat
+- Highly customizable roles and macros
+
+==============================================================================
+INSTALLATION                                            *dogmeat-installation*
+
+Using your favorite plugin manager:
+
+lazy.nvim: >
+    {
+      'cristianoliveira/dogmeat.nvim',
+      config = function()
+        require('dogmeat').setup()
+      end
+    }
+<
+
+vim-plug: >
+    Plug 'cristianoliveira/dogmeat.nvim'
+<
+
+==============================================================================
+CONFIGURATION                                          *dogmeat-configuration*
+
+                                                             *dogmeat.setup()*
+setup({opts})
+    Configure dogmeat.nvim with custom options.
+
+    Parameters: ~
+        {opts} (table) Configuration options:
+            - aichat_cmd (string): Command to run aichat (default: "aichat")
+            - roles (table): Predefined roles for code completion
+            - macros (table): Macros for automating repetitive tasks
+
+    Example: >
+        require('dogmeat').setup({
+          aichat_cmd = "aichat",
+          roles = {
+            code_review = "You are a code reviewer...",
+          },
+          macros = {}
+        })
+<
+
+                                                            *dogmeat.config*
+config
+    The current configuration table. Access via >
+        require('dogmeat').config
+<
+
+==============================================================================
+COMMANDS                                                    *dogmeat-commands*
+
+Currently no commands are defined. Commands will be added in future versions.
+
+==============================================================================
+FUNCTIONS                                                  *dogmeat-functions*
+
+Currently no public functions are exposed. Functions will be added in future
+versions.
+
+==============================================================================
+LICENSE                                                      *dogmeat-license*
+
+MIT License
+
+ vim:tw=78:ts=8:ft=help:norl:

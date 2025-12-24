@@ -17,7 +17,11 @@ check: lint test ## Run all checks (lint + test)
 
 .PHONY: clean
 clean: ## Clean any build artifacts
-	rm -rf luacov.*
+	rm -rf luacov.* doc/tags
+
+.PHONY: helptags
+helptags: ## Generate helptags for documentation
+	nvim --headless --noplugin -u NONE -c "helptags doc" -c "quit"
 
 .PHONY: install
 install: ## Install dependencies (if using luarocks)
