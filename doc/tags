@@ -1,0 +1,10 @@
+dogmeat-commands	dogmeat.txt	/*dogmeat-commands*
+dogmeat-configuration	dogmeat.txt	/*dogmeat-configuration*
+dogmeat-contents	dogmeat.txt	/*dogmeat-contents*
+dogmeat-functions	dogmeat.txt	/*dogmeat-functions*
+dogmeat-installation	dogmeat.txt	/*dogmeat-installation*
+dogmeat-introduction	dogmeat.txt	/*dogmeat-introduction*
+dogmeat-license	dogmeat.txt	/*dogmeat-license*
+dogmeat.config	dogmeat.txt	/*dogmeat.config*
+dogmeat.setup()	dogmeat.txt	/*dogmeat.setup()*
+dogmeat.txt	dogmeat.txt	/*dogmeat.txt*
