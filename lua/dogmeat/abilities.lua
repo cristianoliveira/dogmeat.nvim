@@ -72,19 +72,14 @@ end
 --- @class FetchCodeWithInstructionOptions
 --- @field on_finish fun(resp: OnFinishFetchingCode) Callback invoked when the user finishes fetching code
 --- @field current_file? string The path to the current file
---- @field instruction string The instruction to be used
 
 --- Go fetch code from aichat with instruction (no mardown file)
+--- @param instructions string The instructions to be used
 --- @param opts FetchCodeWithInstructionOptions
-M.fetch_code_with_instruction = function(opts)
+M.fetch_code_with_instruction = function(instructions, opts)
   local on_finish = opts.on_finish
   if not on_finish then
     print("No on_finish callback provided")
-    return nil
-  end
-  local instruction = opts.instruction
-  if not instruction then
-    print("No instruction provided")
     return nil
   end
 
@@ -94,7 +89,7 @@ M.fetch_code_with_instruction = function(opts)
       "Apply the changes in " ..
       opts.current_file ..
       " following the instructions in " ..
-      opts.instruction
+      instructions
     )
     :code(true)
     :to_command()
