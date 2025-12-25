@@ -2,11 +2,26 @@
 -- Just a helper to run the plugin for development, to use it:
 -- :source %
 local dogmeat = require("dogmeat")
+local editor = require("dogmeat.editor.diff")
+local temp = require("dogmeat.editor.temp")
 
-dogmeat.go_fetch_code({
+local current_file = vim.fn.expand("%:p")
+local current_ext = vim.fn.expand("%:e")
+
+dogmeat.go.fetch_code({
   on_finish = function(resp)
-    print(resp.path)
-    print(resp.content)
+    local content_as_table = vim.split(resp.content, "\n")
+    local temp_file = temp.create_temp_file({
+      ext = current_ext,
+      content = content_as_table,
+    })
+
+    editor.diff_buffer({
+      current_file = current_file,
+      file_with_changes = temp_file,
+      open_in_tab = true,
+    })
   end,
-  current_file = "/home/cristianoliveira/other/dogmeat.nvim/lua/dogmeat/init.lua"
+
+  current_file = current_file,
 })
