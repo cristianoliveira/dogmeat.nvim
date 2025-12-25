@@ -6,11 +6,11 @@ help: ## Lists the available commands. Add a comment with '##' to describe a com
 
 .PHONY: test
 test: ## Run unit tests with busted
-	busted tests/
+	busted lua/
 
 .PHONY: lint
 lint: ## Run linter
-	luacheck lua/
+	luacheck lua/ --exclude-files '**/*_spec.lua'
 
 .PHONY: check
 check: lint test ## Run all checks (lint + test)

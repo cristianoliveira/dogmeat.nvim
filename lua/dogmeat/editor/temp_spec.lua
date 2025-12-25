@@ -33,32 +33,32 @@ describe("editor temp", function()
   end)
 
   describe("module structure", function()
-    it("should export create_temp_file function", function()
+    it("export create_temp_file function", function()
       assert.is_function(temp.create_temp_file)
     end)
   end)
 
   describe("create_temp_file", function()
-    it("should return a temp file path", function()
+    it("return a temp file path", function()
       local path = temp.create_temp_file({})
 
       assert.is_string(path)
       assert.is_not_nil(path:find("/tmp/nvim_temp"))
     end)
 
-    it("should use default txt extension when not provided", function()
+    it("use default txt extension when not provided", function()
       local path = temp.create_temp_file({})
 
       assert.is_not_nil(path:find("%.txt$"))
     end)
 
-    it("should use provided extension", function()
+    it("use provided extension", function()
       local path = temp.create_temp_file({ ext = "lua" })
 
       assert.is_not_nil(path:find("%.lua$"))
     end)
 
-    it("should support various file extensions", function()
+    it("support various file extensions", function()
       local extensions = { "md", "py", "js", "json", "yaml" }
 
       for _, ext in ipairs(extensions) do
@@ -67,50 +67,50 @@ describe("editor temp", function()
       end
     end)
 
-    it("should call tempname to generate temp path", function()
+    it("call tempname to generate temp path", function()
       temp.create_temp_file({})
 
       assert.spy(vim_fn_spy.tempname).was_called(1)
     end)
 
-    it("should create a buffer for the temp file", function()
+    it("create a buffer for the temp file", function()
       temp.create_temp_file({})
 
       assert.spy(vim_fn_spy.bufadd).was_called(1)
     end)
 
-    it("should load the buffer", function()
+    it("load the buffer", function()
       temp.create_temp_file({})
 
       assert.spy(vim_fn_spy.bufload).was_called_with(42) -- buffer number from bufadd mock
     end)
 
-    it("should set buffer lines with empty content by default", function()
+    it("set buffer lines with empty content by default", function()
       temp.create_temp_file({})
 
       assert.spy(vim_api_spy.nvim_buf_set_lines).was_called_with(42, 0, -1, false, {})
     end)
 
-    it("should set buffer lines with provided content", function()
+    it("set buffer lines with provided content", function()
       local content = { "line 1", "line 2", "line 3" }
       temp.create_temp_file({ content = content })
 
       assert.spy(vim_api_spy.nvim_buf_set_lines).was_called_with(42, 0, -1, false, content)
     end)
 
-    it("should set filetype to extension", function()
+    it("set filetype to extension", function()
       temp.create_temp_file({ ext = "lua" })
 
       assert.spy(vim_api_spy.nvim_buf_set_option).was_called_with(42, 'filetype', 'lua')
     end)
 
-    it("should set the buffer in the current window", function()
+    it("set the buffer in the current window", function()
       temp.create_temp_file({})
 
       assert.spy(vim_api_spy.nvim_win_set_buf).was_called_with(0, 42)
     end)
 
-    it("should set cursor to beginning of file", function()
+    it("set cursor to beginning of file", function()
       temp.create_temp_file({})
 
       assert.spy(vim_api_spy.nvim_win_set_cursor).was_called_with(0, { 1, 0 })
@@ -118,28 +118,28 @@ describe("editor temp", function()
   end)
 
   describe("content handling", function()
-    it("should handle single line content", function()
+    it("handle single line content", function()
       local content = { "single line" }
       temp.create_temp_file({ content = content })
 
       assert.spy(vim_api_spy.nvim_buf_set_lines).was_called_with(42, 0, -1, false, content)
     end)
 
-    it("should handle multi-line content", function()
+    it("handle multi-line content", function()
       local content = { "line 1", "line 2", "line 3", "line 4" }
       temp.create_temp_file({ content = content })
 
       assert.spy(vim_api_spy.nvim_buf_set_lines).was_called_with(42, 0, -1, false, content)
     end)
 
-    it("should handle empty lines in content", function()
+    it("handle empty lines in content", function()
       local content = { "line 1", "", "line 3" }
       temp.create_temp_file({ content = content })
 
       assert.spy(vim_api_spy.nvim_buf_set_lines).was_called_with(42, 0, -1, false, content)
     end)
 
-    it("should handle content with special characters", function()
+    it("handle content with special characters", function()
       local content = { "line with 'quotes'", "line with \"double quotes\"", "line with \\backslash" }
       temp.create_temp_file({ content = content })
 
@@ -148,21 +148,21 @@ describe("editor temp", function()
   end)
 
   describe("extension handling", function()
-    it("should handle markdown extension", function()
+    it("handle markdown extension", function()
       local path = temp.create_temp_file({ ext = "md" })
 
       assert.is_not_nil(path:find("%.md$"))
       assert.spy(vim_api_spy.nvim_buf_set_option).was_called_with(42, 'filetype', 'md')
     end)
 
-    it("should handle python extension", function()
+    it("handle python extension", function()
       local path = temp.create_temp_file({ ext = "py" })
 
       assert.is_not_nil(path:find("%.py$"))
       assert.spy(vim_api_spy.nvim_buf_set_option).was_called_with(42, 'filetype', 'py')
     end)
 
-    it("should handle lua extension", function()
+    it("handle lua extension", function()
       local path = temp.create_temp_file({ ext = "lua" })
 
       assert.is_not_nil(path:find("%.lua$"))
@@ -171,7 +171,7 @@ describe("editor temp", function()
   end)
 
   describe("complete flow", function()
-    it("should execute all steps in correct order", function()
+    it("execute all steps in correct order", function()
       local call_order = {}
 
       vim_fn_spy.tempname = spy.new(function()
@@ -223,14 +223,14 @@ describe("editor temp", function()
   end)
 
   describe("edge cases", function()
-    it("should handle empty opts table", function()
+    it("handle empty opts table", function()
       local path = temp.create_temp_file({})
 
       assert.is_string(path)
       assert.is_not_nil(path:find("%.txt$"))
     end)
 
-    it("should handle opts with only ext", function()
+    it("handle opts with only ext", function()
       local path = temp.create_temp_file({ ext = "md" })
 
       assert.is_string(path)
@@ -238,7 +238,7 @@ describe("editor temp", function()
       assert.spy(vim_api_spy.nvim_buf_set_lines).was_called_with(42, 0, -1, false, {})
     end)
 
-    it("should handle opts with only content", function()
+    it("handle opts with only content", function()
       local content = { "test content" }
       local path = temp.create_temp_file({ content = content })
 
@@ -247,7 +247,7 @@ describe("editor temp", function()
       assert.spy(vim_api_spy.nvim_buf_set_lines).was_called_with(42, 0, -1, false, content)
     end)
 
-    it("should handle very long content", function()
+    it("handle very long content", function()
       local content = {}
       for i = 1, 1000 do
         table.insert(content, "Line " .. i)

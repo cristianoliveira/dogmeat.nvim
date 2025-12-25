@@ -27,31 +27,31 @@ describe("dogmeat configs", function()
   end)
 
   describe("default configuration", function()
-    it("should export default config", function()
+    it("export default config", function()
       assert.is_not_nil(configs.default)
       assert.is_table(configs.default)
     end)
 
-    it("should have aichat_bin default", function()
+    it("have aichat_bin default", function()
       assert.equals("aichat", configs.default.aichat_bin)
     end)
 
-    it("should have empty roles table", function()
+    it("have empty roles table", function()
       assert.is_table(configs.default.roles)
     end)
 
-    it("should have empty macros table", function()
+    it("have empty macros table", function()
       assert.is_table(configs.default.macros)
     end)
   end)
 
   describe("setup function", function()
-    it("should return a config object", function()
+    it("return a config object", function()
       local result = configs.setup({})
       assert.is_table(result)
     end)
 
-    it("should merge with defaults", function()
+    it("merge with defaults", function()
       local result = configs.setup({
         aichat_bin = "/custom/aichat"
       })
@@ -61,7 +61,7 @@ describe("dogmeat configs", function()
       assert.is_table(result.macros)
     end)
 
-    it("should deep merge nested tables", function()
+    it("deep merge nested tables", function()
       local result = configs.setup({
         roles = {
           reviewer = "code-reviewer",
@@ -74,7 +74,7 @@ describe("dogmeat configs", function()
       assert.equals("aichat", result.aichat_bin)
     end)
 
-    it("should handle nil opts gracefully", function()
+    it("handle nil opts gracefully", function()
       local result = configs.setup(nil)
 
       assert.equals("aichat", result.aichat_bin)
@@ -82,7 +82,7 @@ describe("dogmeat configs", function()
       assert.is_table(result.macros)
     end)
 
-    it("should handle empty opts", function()
+    it("handle empty opts", function()
       local result = configs.setup({})
 
       assert.equals("aichat", result.aichat_bin)
@@ -90,7 +90,7 @@ describe("dogmeat configs", function()
       assert.is_table(result.macros)
     end)
 
-    it("should preserve all defaults when only partial config provided", function()
+    it("preserve all defaults when only partial config provided", function()
       local result = configs.setup({
         macros = { test = "test-macro" }
       })
@@ -100,7 +100,7 @@ describe("dogmeat configs", function()
       assert.equals("test-macro", result.macros.test)
     end)
 
-    it("should allow multiple roles", function()
+    it("allow multiple roles", function()
       local result = configs.setup({
         roles = {
           role1 = "description1",
@@ -114,7 +114,7 @@ describe("dogmeat configs", function()
       assert.equals("description3", result.roles.role3)
     end)
 
-    it("should allow multiple macros", function()
+    it("allow multiple macros", function()
       local result = configs.setup({
         macros = {
           macro1 = "cmd1",
@@ -128,7 +128,7 @@ describe("dogmeat configs", function()
       assert.equals("cmd3", result.macros.macro3)
     end)
 
-    it("should not modify the default config", function()
+    it("not modify the default config", function()
       local original_bin = configs.default.aichat_bin
 
       configs.setup({
@@ -139,7 +139,7 @@ describe("dogmeat configs", function()
       assert.equals(original_bin, configs.default.aichat_bin)
     end)
 
-    it("should handle complex nested configuration", function()
+    it("handle complex nested configuration", function()
       local result = configs.setup({
         aichat_bin = "/usr/bin/aichat",
         roles = {
@@ -161,7 +161,7 @@ describe("dogmeat configs", function()
   end)
 
   describe("edge cases", function()
-    it("should handle config with only aichat_bin", function()
+    it("handle config with only aichat_bin", function()
       local result = configs.setup({
         aichat_bin = "/only/bin/path"
       })
@@ -171,7 +171,7 @@ describe("dogmeat configs", function()
       assert.is_table(result.macros)
     end)
 
-    it("should handle config with only roles", function()
+    it("handle config with only roles", function()
       local result = configs.setup({
         roles = { test = "test-role" }
       })
@@ -181,7 +181,7 @@ describe("dogmeat configs", function()
       assert.is_table(result.macros)
     end)
 
-    it("should handle config with only macros", function()
+    it("handle config with only macros", function()
       local result = configs.setup({
         macros = { test = "test-macro" }
       })

@@ -35,23 +35,23 @@ describe("aichat backend", function()
   end)
 
   describe("configuration", function()
-    it("should have default aichat_bin config", function()
+    it("have default aichat_bin config", function()
       assert.equals("aichat", aichat.configs.aichat_bin)
     end)
 
-    it("should merge custom configs in new()", function()
+    it("merge custom configs in new()", function()
       local builder = aichat:new({ aichat_bin = "/custom/path/aichat" })
       assert.equals("/custom/path/aichat", builder.configs.aichat_bin)
     end)
 
-    it("should keep default config when no opts provided to new()", function()
+    it("keep default config when no opts provided to new()", function()
       local builder = aichat:new()
       assert.equals("aichat", builder.configs.aichat_bin)
     end)
   end)
 
   describe("builder pattern", function()
-    it("should return self for chaining", function()
+    it("return self for chaining", function()
       local result = aichat:new()
         :add_file("test.lua")
         :add_model("gpt-4")
@@ -60,7 +60,7 @@ describe("aichat backend", function()
       assert.is_not_nil(result)
     end)
 
-    it("should reset args with new()", function()
+    it("reset args with new()", function()
       aichat:new()
         :add_file("old.lua")
         :prompt("old prompt")
@@ -74,7 +74,7 @@ describe("aichat backend", function()
   end)
 
   describe("add_file", function()
-    it("should add a single file", function()
+    it("add a single file", function()
       aichat:new():add_file("test.lua")
       local command = aichat.to_command()
 
@@ -93,7 +93,7 @@ describe("aichat backend", function()
       assert.is_true(has_file_value, "Expected test.lua value in command. Got: " .. table.concat(command, ", "))
     end)
 
-    it("should add multiple files", function()
+    it("add multiple files", function()
       aichat:new()
         :add_file("file1.lua")
         :add_file("file2.lua")
@@ -112,7 +112,7 @@ describe("aichat backend", function()
   end)
 
   describe("add_role", function()
-    it("should add a role to args", function()
+    it("add a role to args", function()
       aichat:new():add_role("code-reviewer")
       -- This tests the internal state is set
       -- Note: there's a bug in the original code - add_role sets args.roles as array
@@ -121,7 +121,7 @@ describe("aichat backend", function()
   end)
 
   describe("add_model", function()
-    it("should set model in command", function()
+    it("set model in command", function()
       aichat:new():add_model("gpt-4")
       local command = aichat.to_command()
 
@@ -138,7 +138,7 @@ describe("aichat backend", function()
   end)
 
   describe("macro", function()
-    it("should set macro name in command", function()
+    it("set macro name in command", function()
       aichat:new():macro("test-macro")
       local command = aichat.to_command()
 
@@ -155,7 +155,7 @@ describe("aichat backend", function()
   end)
 
   describe("prompt", function()
-    it("should add prompt to command", function()
+    it("add prompt to command", function()
       aichat:new():prompt("explain this code")
       local command = aichat.to_command()
 
@@ -169,7 +169,7 @@ describe("aichat backend", function()
   end)
 
   describe("code", function()
-    it("should add --code flag when true", function()
+    it("add --code flag when true", function()
       aichat:new():code(true)
       local command = aichat.to_command()
 
@@ -181,7 +181,7 @@ describe("aichat backend", function()
       assert.is_true(has_code, "Expected --code flag in command")
     end)
 
-    it("should not add --code flag when false", function()
+    it("not add --code flag when false", function()
       aichat:new():code(false)
       local command = aichat.to_command()
 
@@ -195,7 +195,7 @@ describe("aichat backend", function()
   end)
 
   describe("to_command", function()
-    it("should build complete command with all options", function()
+    it("build complete command with all options", function()
       aichat:new()
         :macro("refactor")
         :add_model("gpt-4")
@@ -226,7 +226,7 @@ describe("aichat backend", function()
       assert.is_true(has_code, "Expected --code in command")
     end)
 
-    it("should return empty-ish table when no args set", function()
+    it("return empty-ish table when no args set", function()
       aichat:new()
       local command = aichat.to_command()
 
@@ -235,7 +235,7 @@ describe("aichat backend", function()
   end)
 
   describe("list commands", function()
-    it("should generate list_macros command", function()
+    it("generate list_macros command", function()
       local command = aichat.list_macros()
 
       assert.is_table(command)
@@ -243,7 +243,7 @@ describe("aichat backend", function()
       assert.equals("--list-macros", command[2])
     end)
 
-    it("should generate list_roles command", function()
+    it("generate list_roles command", function()
       local command = aichat.list_roles()
 
       assert.is_table(command)
@@ -251,7 +251,7 @@ describe("aichat backend", function()
       assert.equals("--list-roles", command[2])
     end)
 
-    it("should generate list_models command", function()
+    it("generate list_models command", function()
       local command = aichat.list_models()
 
       assert.is_table(command)
@@ -261,21 +261,21 @@ describe("aichat backend", function()
   end)
 
   describe("edge cases", function()
-    it("should handle nil prompt", function()
+    it("handle nil prompt", function()
       aichat:new():add_file("test.lua")
       local command = aichat.to_command()
 
       assert.is_table(command)
     end)
 
-    it("should handle special characters in prompt", function()
+    it("handle special characters in prompt", function()
       aichat:new():prompt("test 'with' quotes")
       local command = aichat.to_command()
 
       assert.is_table(command)
     end)
 
-    it("should handle empty string prompt", function()
+    it("handle empty string prompt", function()
       aichat:new():prompt("")
       local command = aichat.to_command()
 
@@ -288,7 +288,7 @@ describe("aichat backend", function()
       assert.is_true(has_empty_prompt, "Expected empty prompt in command")
     end)
 
-    it("should handle file paths with spaces", function()
+    it("handle file paths with spaces", function()
       aichat:new():add_file("path with spaces/file.lua")
       local command = aichat.to_command()
 
@@ -296,7 +296,7 @@ describe("aichat backend", function()
       assert.is_not_nil(cmd_str:find("path with spaces"))
     end)
 
-    it("should handle file paths with special characters", function()
+    it("handle file paths with special characters", function()
       aichat:new():add_file("path/with-special_chars.123.lua")
       local command = aichat.to_command()
 
@@ -304,7 +304,7 @@ describe("aichat backend", function()
       assert.is_not_nil(cmd_str:find("with%-special_chars"))
     end)
 
-    it("should handle multiline prompts", function()
+    it("handle multiline prompts", function()
       aichat:new():prompt("line1\nline2\nline3")
       local command = aichat.to_command()
 
@@ -314,7 +314,7 @@ describe("aichat backend", function()
   end)
 
   describe("command structure", function()
-    it("should include aichat_bin as first element", function()
+    it("include aichat_bin as first element", function()
       aichat:new()
       local command = aichat.to_command()
 
@@ -322,14 +322,14 @@ describe("aichat backend", function()
       assert.equals("aichat", command[1])
     end)
 
-    it("should use custom aichat_bin when configured", function()
+    it("use custom aichat_bin when configured", function()
       aichat:new({ aichat_bin = "/usr/local/bin/aichat" })
       local command = aichat.to_command()
 
       assert.equals("/usr/local/bin/aichat", command[1])
     end)
 
-    it("should place --code flag before other flags", function()
+    it("place --code flag before other flags", function()
       aichat:new()
         :code(true)
         :macro("test")
@@ -350,7 +350,7 @@ describe("aichat backend", function()
       assert.is_true(code_pos < macro_pos, "--code should come before --macro")
     end)
 
-    it("should handle only prompt without other options", function()
+    it("handle only prompt without other options", function()
       aichat:new():prompt("just a prompt")
       local command = aichat.to_command()
 
@@ -364,7 +364,7 @@ describe("aichat backend", function()
       assert.is_true(has_prompt)
     end)
 
-    it("should handle only role without other options", function()
+    it("handle only role without other options", function()
       aichat:new():add_role("assistant")
       local command = aichat.to_command()
 
@@ -377,7 +377,7 @@ describe("aichat backend", function()
   end)
 
   describe("complex scenarios", function()
-    it("should build command with all options in correct order", function()
+    it("build command with all options in correct order", function()
       aichat:new()
         :code(true)
         :macro("refactor")
@@ -399,7 +399,7 @@ describe("aichat backend", function()
       assert.is_not_nil(cmd_str:find("refactor these files"))
     end)
 
-    it("should allow building multiple commands with same module", function()
+    it("allow building multiple commands with same module", function()
       -- First command
       aichat:new():macro("cmd1"):prompt("prompt1")
       local cmd1 = aichat.to_command()
@@ -416,7 +416,7 @@ describe("aichat backend", function()
       assert.is_nil(cmd2_str:find("cmd1"), "cmd2 should not contain cmd1 data")
     end)
 
-    it("should handle three or more files", function()
+    it("handle three or more files", function()
       aichat:new()
         :add_file("file1.lua")
         :add_file("file2.lua")
@@ -434,7 +434,7 @@ describe("aichat backend", function()
   end)
 
   describe("role functionality", function()
-    it("should add role flag to command", function()
+    it("add role flag to command", function()
       aichat:new():add_role("code-reviewer")
       local command = aichat.to_command()
 
@@ -453,7 +453,7 @@ describe("aichat backend", function()
       assert.is_true(has_role_value, "Expected role value 'code-reviewer'")
     end)
 
-    it("should support different role names", function()
+    it("support different role names", function()
       aichat:new():add_role("shell-expert")
       local command = aichat.to_command()
 
@@ -463,7 +463,7 @@ describe("aichat backend", function()
   end)
 
   describe("state management", function()
-    it("should start with clean state after new()", function()
+    it("start with clean state after new()", function()
       aichat:new()
       local command = aichat.to_command()
 
@@ -472,7 +472,7 @@ describe("aichat backend", function()
       assert.equals("aichat", command[1])
     end)
 
-    it("should not leak state between new() calls", function()
+    it("not leak state between new() calls", function()
       aichat:new():add_file("file1.lua"):macro("macro1")
       aichat:new():add_file("file2.lua")
       local command = aichat.to_command()

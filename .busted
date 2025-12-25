@@ -3,6 +3,6 @@ return {
     verbose = true,
     lpath = "lua/?.lua;lua/?/init.lua",
     pattern = "_spec%.lua$",
-    ROOT = {"tests/"},
+    ROOT = {"lua/"},
   }
 }

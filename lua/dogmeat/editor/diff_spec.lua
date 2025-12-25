@@ -31,13 +31,13 @@ describe("editor diff", function()
   end)
 
   describe("module structure", function()
-    it("should export diff_buffer function", function()
+    it("export diff_buffer function", function()
       assert.is_function(diff.diff_buffer)
     end)
   end)
 
   describe("diff_buffer", function()
-    it("should require file_with_changes option", function()
+    it("require file_with_changes option", function()
       diff.diff_buffer({
         file_with_changes = ""
       })
@@ -46,7 +46,7 @@ describe("editor diff", function()
       assert.spy(vim_cmd_spy).was_not_called()
     end)
 
-    it("should use current buffer when current_file not provided", function()
+    it("use current buffer when current_file not provided", function()
       diff.diff_buffer({
         file_with_changes = "/path/to/changes.lua"
       })
@@ -55,7 +55,7 @@ describe("editor diff", function()
       assert.spy(vim_api_spy.nvim_buf_get_name).was_called_with(0)
     end)
 
-    it("should use provided current_file when given", function()
+    it("use provided current_file when given", function()
       diff.diff_buffer({
         current_file = "/custom/file.lua",
         file_with_changes = "/path/to/changes.lua"
@@ -65,7 +65,7 @@ describe("editor diff", function()
       assert.spy(vim_api_spy.nvim_buf_get_name).was_not_called()
     end)
 
-    it("should open files in vertical split", function()
+    it("open files in vertical split", function()
       diff.diff_buffer({
         current_file = "/current/file.lua",
         file_with_changes = "/changed/file.lua"
@@ -75,7 +75,7 @@ describe("editor diff", function()
       assert.spy(vim_cmd_spy).was_called(2)
     end)
 
-    it("should escape file paths", function()
+    it("escape file paths", function()
       diff.diff_buffer({
         current_file = "/path with spaces/file.lua",
         file_with_changes = "/other path/changes.lua"
@@ -87,7 +87,7 @@ describe("editor diff", function()
       assert.spy(vim_fn_spy.fnameescape).was_called_with("/path with spaces/file.lua")
     end)
 
-    it("should open in new tab when open_in_tab is true", function()
+    it("open in new tab when open_in_tab is true", function()
       diff.diff_buffer({
         file_with_changes = "/changed/file.lua",
         open_in_tab = true
@@ -97,7 +97,7 @@ describe("editor diff", function()
       assert.spy(vim_cmd_spy).was_called(3)
     end)
 
-    it("should not open new tab when open_in_tab is false", function()
+    it("not open new tab when open_in_tab is false", function()
       diff.diff_buffer({
         file_with_changes = "/changed/file.lua",
         open_in_tab = false
@@ -107,7 +107,7 @@ describe("editor diff", function()
       assert.spy(vim_cmd_spy).was_called(2)
     end)
 
-    it("should not open new tab when open_in_tab is not provided", function()
+    it("not open new tab when open_in_tab is not provided", function()
       diff.diff_buffer({
         file_with_changes = "/changed/file.lua"
       })
@@ -118,7 +118,7 @@ describe("editor diff", function()
   end)
 
   describe("edge cases", function()
-    it("should handle nil file_with_changes", function()
+    it("handle nil file_with_changes", function()
       diff.diff_buffer({
         current_file = "/current/file.lua"
       })
@@ -127,7 +127,7 @@ describe("editor diff", function()
       assert.spy(vim_cmd_spy).was_not_called()
     end)
 
-    it("should handle file paths with special characters", function()
+    it("handle file paths with special characters", function()
       diff.diff_buffer({
         current_file = "/path/with-special_chars.123.lua",
         file_with_changes = "/other/path-with_chars.456.lua"
@@ -136,7 +136,7 @@ describe("editor diff", function()
       assert.spy(vim_fn_spy.fnameescape).was_called(2)
     end)
 
-    it("should handle absolute paths", function()
+    it("handle absolute paths", function()
       diff.diff_buffer({
         current_file = "/absolute/path/to/file.lua",
         file_with_changes = "/absolute/path/to/changes.lua"
@@ -145,7 +145,7 @@ describe("editor diff", function()
       assert.spy(vim_cmd_spy).was_called(2)
     end)
 
-    it("should handle relative paths", function()
+    it("handle relative paths", function()
       diff.diff_buffer({
         current_file = "relative/path/file.lua",
         file_with_changes = "relative/path/changes.lua"
@@ -156,7 +156,7 @@ describe("editor diff", function()
   end)
 
   describe("command execution order", function()
-    it("should edit file_with_changes first, then diffsplit current_file", function()
+    it("edit file_with_changes first, then diffsplit current_file", function()
       local call_order = {}
       vim_cmd_spy = spy.new(function(cmd)
         table.insert(call_order, cmd)
@@ -178,7 +178,7 @@ describe("editor diff", function()
       assert.is_not_nil(call_order[2]:find("/current/file.lua"))
     end)
 
-    it("should create tab before opening files when open_in_tab is true", function()
+    it("create tab before opening files when open_in_tab is true", function()
       local call_order = {}
       vim_cmd_spy = spy.new(function(cmd)
         table.insert(call_order, cmd)

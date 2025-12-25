@@ -56,7 +56,7 @@ describe("abilities", function()
   end)
 
   describe("fetch_code", function()
-    it("should return nil when on_finish callback is missing", function()
+    it("returns nil when on_finish callback is missing", function()
       local result = abilities.fetch_code({
         current_file = "/path/to/file.lua"
       })
@@ -65,7 +65,7 @@ describe("abilities", function()
       assert.spy(editor_mock.tmp_markdown_file).was_not_called()
     end)
 
-    it("should not proceed if instructions file is missing", function()
+    it("does not proceed if instructions file is missing", function()
       local on_finish = spy.new(function() end)
       local editor_callback = nil
 
@@ -91,7 +91,7 @@ describe("abilities", function()
       assert.spy(runner_mock.async).was_not_called()
     end)
 
-    it("should call on_finish with success result when code is 0", function()
+    it("calls on_finish with success result when code is 0", function()
       local on_finish = spy.new(function() end)
       local editor_callback = nil
       local runner_callbacks = nil
@@ -124,7 +124,7 @@ describe("abilities", function()
       })
     end)
 
-    it("should call on_finish with errors when code is non-zero", function()
+    it("calls on_finish with errors when code is non-zero", function()
       local on_finish = spy.new(function() end)
       local editor_callback = nil
       local runner_callbacks = nil
@@ -155,7 +155,7 @@ describe("abilities", function()
       assert.is_table(call_args.errors)
     end)
 
-    it("should call on_finish with errors on runner error", function()
+    it("calls on_finish with errors on runner error", function()
       local on_finish = spy.new(function() end)
       local editor_callback = nil
       local runner_callbacks = nil
@@ -189,7 +189,7 @@ describe("abilities", function()
   end)
 
   describe("fetch_code_with_instruction", function()
-    it("should return nil when on_finish callback is missing", function()
+    it("returns nil when on_finish callback is missing", function()
       local result = abilities.fetch_code_with_instruction("Refactor this", {
         current_file = "/path/to/file.lua"
       })
@@ -197,7 +197,7 @@ describe("abilities", function()
       assert.is_nil(result)
     end)
 
-    it("should call on_finish with success result when code is 0", function()
+    it("calls on_finish with success result when code is 0", function()
       local on_finish = spy.new(function() end)
       local runner_callbacks = nil
 
@@ -223,7 +223,7 @@ describe("abilities", function()
       })
     end)
 
-    it("should call on_finish with errors when code is non-zero", function()
+    it("calls on_finish with errors when code is non-zero", function()
       local on_finish = spy.new(function() end)
       local runner_callbacks = nil
 
@@ -248,7 +248,7 @@ describe("abilities", function()
       assert.is_table(call_args.errors)
     end)
 
-    it("should call on_finish with errors on runner error", function()
+    it("calls on_finish with errors on runner error", function()
       local on_finish = spy.new(function() end)
       local runner_callbacks = nil
 

@@ -29,39 +29,39 @@ describe("dogmeat init", function()
   end)
 
   describe("module structure", function()
-    it("should export configs", function()
+    it("export configs", function()
       assert.is_not_nil(dogmeat.configs)
       assert.is_table(dogmeat.configs)
     end)
 
-    it("should export setup function", function()
+    it("export setup function", function()
       assert.is_function(dogmeat.setup)
     end)
 
-    it("should export abilities as 'go'", function()
+    it("export abilities as 'go'", function()
       assert.is_not_nil(dogmeat.go)
       assert.is_table(dogmeat.go)
     end)
   end)
 
   describe("default configuration", function()
-    it("should have default aichat_bin", function()
+    it("have default aichat_bin", function()
       assert.equals("aichat", dogmeat.configs.aichat_bin)
     end)
 
-    it("should have empty roles table", function()
+    it("have empty roles table", function()
       assert.is_table(dogmeat.configs.roles)
       assert.equals(0, #dogmeat.configs.roles)
     end)
 
-    it("should have empty macros table", function()
+    it("have empty macros table", function()
       assert.is_table(dogmeat.configs.macros)
       assert.equals(0, #dogmeat.configs.macros)
     end)
   end)
 
   describe("setup", function()
-    it("should update configs when called", function()
+    it("update configs when called", function()
       dogmeat.setup({
         aichat_bin = "/custom/aichat"
       })
@@ -69,7 +69,7 @@ describe("dogmeat init", function()
       assert.equals("/custom/aichat", dogmeat.configs.aichat_bin)
     end)
 
-    it("should merge custom roles", function()
+    it("merge custom roles", function()
       dogmeat.setup({
         roles = {
           reviewer = "code-reviewer-role",
@@ -82,7 +82,7 @@ describe("dogmeat init", function()
       assert.equals("assistant-role", dogmeat.configs.roles.assistant)
     end)
 
-    it("should merge custom macros", function()
+    it("merge custom macros", function()
       dogmeat.setup({
         macros = {
           refactor = "refactor-macro",
@@ -95,7 +95,7 @@ describe("dogmeat init", function()
       assert.equals("test-macro", dogmeat.configs.macros.test)
     end)
 
-    it("should preserve defaults when not overridden", function()
+    it("preserve defaults when not overridden", function()
       dogmeat.setup({
         roles = { custom = "custom-role" }
       })
@@ -104,7 +104,7 @@ describe("dogmeat init", function()
       assert.is_table(dogmeat.configs.macros)
     end)
 
-    it("should handle empty opts", function()
+    it("handle empty opts", function()
       dogmeat.setup({})
 
       assert.equals("aichat", dogmeat.configs.aichat_bin)
@@ -112,7 +112,7 @@ describe("dogmeat init", function()
       assert.is_table(dogmeat.configs.macros)
     end)
 
-    it("should handle nil opts", function()
+    it("handle nil opts", function()
       dogmeat.setup()
 
       assert.equals("aichat", dogmeat.configs.aichat_bin)
@@ -122,7 +122,7 @@ describe("dogmeat init", function()
   end)
 
   describe("abilities integration", function()
-    it("should provide fetch_code ability", function()
+    it("provide fetch_code ability", function()
       assert.is_not_nil(dogmeat.go.fetch_code)
       assert.is_function(dogmeat.go.fetch_code)
     end)
