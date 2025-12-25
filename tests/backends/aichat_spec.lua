@@ -274,5 +274,213 @@ describe("aichat backend", function()
 
       assert.is_table(command)
     end)
+
+    it("should handle empty string prompt", function()
+      aichat:new():prompt("")
+      local command = aichat.to_command()
+
+      assert.is_table(command)
+      -- Empty prompt should still be included
+      local has_empty_prompt = false
+      for _, v in ipairs(command) do
+        if v == "''" then has_empty_prompt = true end
+      end
+      assert.is_true(has_empty_prompt, "Expected empty prompt in command")
+    end)
+
+    it("should handle file paths with spaces", function()
+      aichat:new():add_file("path with spaces/file.lua")
+      local command = aichat.to_command()
+
+      local cmd_str = table.concat(command, " ")
+      assert.is_not_nil(cmd_str:find("path with spaces"))
+    end)
+
+    it("should handle file paths with special characters", function()
+      aichat:new():add_file("path/with-special_chars.123.lua")
+      local command = aichat.to_command()
+
+      local cmd_str = table.concat(command, " ")
+      assert.is_not_nil(cmd_str:find("with%-special_chars"))
+    end)
+
+    it("should handle multiline prompts", function()
+      aichat:new():prompt("line1\nline2\nline3")
+      local command = aichat.to_command()
+
+      local cmd_str = table.concat(command, " ")
+      assert.is_not_nil(cmd_str:find("line1"))
+    end)
+  end)
+
+  describe("command structure", function()
+    it("should include aichat_bin as first element", function()
+      aichat:new()
+      local command = aichat.to_command()
+
+      assert.is_table(command)
+      assert.equals("aichat", command[1])
+    end)
+
+    it("should use custom aichat_bin when configured", function()
+      aichat:new({ aichat_bin = "/usr/local/bin/aichat" })
+      local command = aichat.to_command()
+
+      assert.equals("/usr/local/bin/aichat", command[1])
+    end)
+
+    it("should place --code flag before other flags", function()
+      aichat:new()
+        :code(true)
+        :macro("test")
+        :add_model("gpt-4")
+
+      local command = aichat.to_command()
+
+      -- Find position of --code
+      local code_pos = nil
+      local macro_pos = nil
+      for i, v in ipairs(command) do
+        if v == "--code" then code_pos = i end
+        if v == "--macro" then macro_pos = i end
+      end
+
+      assert.is_not_nil(code_pos, "Expected --code flag")
+      assert.is_not_nil(macro_pos, "Expected --macro flag")
+      assert.is_true(code_pos < macro_pos, "--code should come before --macro")
+    end)
+
+    it("should handle only prompt without other options", function()
+      aichat:new():prompt("just a prompt")
+      local command = aichat.to_command()
+
+      assert.is_table(command)
+      assert.equals("aichat", command[1])
+
+      local has_prompt = false
+      for _, v in ipairs(command) do
+        if v:match("just a prompt") then has_prompt = true end
+      end
+      assert.is_true(has_prompt)
+    end)
+
+    it("should handle only role without other options", function()
+      aichat:new():add_role("assistant")
+      local command = aichat.to_command()
+
+      local has_role = false
+      for _, v in ipairs(command) do
+        if v == "--role" then has_role = true end
+      end
+      assert.is_true(has_role)
+    end)
+  end)
+
+  describe("complex scenarios", function()
+    it("should build command with all options in correct order", function()
+      aichat:new()
+        :code(true)
+        :macro("refactor")
+        :add_model("claude-3")
+        :add_role("code-reviewer")
+        :add_file("src/main.lua")
+        :add_file("src/utils.lua")
+        :prompt("refactor these files")
+
+      local command = aichat.to_command()
+
+      -- Verify all options are present
+      local cmd_str = table.concat(command, " ")
+      assert.is_not_nil(cmd_str:find("--code"))
+      assert.is_not_nil(cmd_str:find("--macro"))
+      assert.is_not_nil(cmd_str:find("--model"))
+      assert.is_not_nil(cmd_str:find("--role"))
+      assert.is_not_nil(cmd_str:find("--file"))
+      assert.is_not_nil(cmd_str:find("refactor these files"))
+    end)
+
+    it("should allow building multiple commands with same module", function()
+      -- First command
+      aichat:new():macro("cmd1"):prompt("prompt1")
+      local cmd1 = aichat.to_command()
+
+      -- Second command (should reset state)
+      aichat:new():macro("cmd2"):prompt("prompt2")
+      local cmd2 = aichat.to_command()
+
+      local cmd1_str = table.concat(cmd1, " ")
+      local cmd2_str = table.concat(cmd2, " ")
+
+      assert.is_not_nil(cmd1_str:find("cmd1"))
+      assert.is_not_nil(cmd2_str:find("cmd2"))
+      assert.is_nil(cmd2_str:find("cmd1"), "cmd2 should not contain cmd1 data")
+    end)
+
+    it("should handle three or more files", function()
+      aichat:new()
+        :add_file("file1.lua")
+        :add_file("file2.lua")
+        :add_file("file3.lua")
+
+      local command = aichat.to_command()
+
+      local file_count = 0
+      for _, v in ipairs(command) do
+        if v == "--file" then file_count = file_count + 1 end
+      end
+
+      assert.equals(3, file_count, "Expected 3 --file flags")
+    end)
+  end)
+
+  describe("role functionality", function()
+    it("should add role flag to command", function()
+      aichat:new():add_role("code-reviewer")
+      local command = aichat.to_command()
+
+      local has_role_flag = false
+      local has_role_value = false
+      for i, v in ipairs(command) do
+        if v == "--role" then
+          has_role_flag = true
+          if command[i + 1] == "code-reviewer" then
+            has_role_value = true
+          end
+        end
+      end
+
+      assert.is_true(has_role_flag, "Expected --role flag")
+      assert.is_true(has_role_value, "Expected role value 'code-reviewer'")
+    end)
+
+    it("should support different role names", function()
+      aichat:new():add_role("shell-expert")
+      local command = aichat.to_command()
+
+      local cmd_str = table.concat(command, " ")
+      assert.is_not_nil(cmd_str:find("shell%-expert"))
+    end)
+  end)
+
+  describe("state management", function()
+    it("should start with clean state after new()", function()
+      aichat:new()
+      local command = aichat.to_command()
+
+      -- Should only have aichat_bin
+      assert.equals(1, #command, "Expected only aichat_bin in command")
+      assert.equals("aichat", command[1])
+    end)
+
+    it("should not leak state between new() calls", function()
+      aichat:new():add_file("file1.lua"):macro("macro1")
+      aichat:new():add_file("file2.lua")
+      local command = aichat.to_command()
+
+      local cmd_str = table.concat(command, " ")
+      assert.is_nil(cmd_str:find("macro1"), "Previous macro should not be present")
+      assert.is_nil(cmd_str:find("file1"), "Previous file should not be present")
+      assert.is_not_nil(cmd_str:find("file2"), "New file should be present")
+    end)
   end)
 end)

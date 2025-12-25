@@ -6,7 +6,7 @@
 --- @field aichat_bin string The path to the aichat binary
 
 --- @class AichatBuilder
---- @field new fun(self: AichatBuilder, opts: AichatConfigs): AichatBuilder
+--- @field new fun(self: AichatBuilder, opts?: AichatConfigs): AichatBuilder
 --- @field macro fun(self: AichatBuilder, macro_name: string): AichatBuilder
 --- @field model fun(self: AichatBuilder, model: string): AichatBuilder
 --- @field role fun(self: AichatBuilder, role: string): AichatBuilder
@@ -37,7 +37,6 @@ local args = {
 }
 
 --- Command builder
---- @param opts? AichatConfigs The configurations to be used
 --- @return AichatConfigs The updated configurations
 M.new = function(self, opts)
   args = {}
