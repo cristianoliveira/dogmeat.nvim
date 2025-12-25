@@ -40,7 +40,7 @@ M.tmp_markdown_file = function(on_finish)
     callback = function()
       -- Read the instruction from the temp file
       local lines = vim.api.nvim_buf_get_lines(temp_buf, 0, -1, false)
-      local user_instruction = table.concat(lines, "\n")
+      local content = table.concat(lines, "\n")
 
       -- Extract just the user's instruction (skip the template lines)
       local instruction_start = nil
@@ -57,10 +57,10 @@ M.tmp_markdown_file = function(on_finish)
             table.insert(instruction_lines, lines[i])
           end
         end
-        user_instruction = table.concat(instruction_lines, "\n")
+        content = table.concat(instruction_lines, "\n")
       end
 
-      on_finish(user_instruction)
+      on_finish({ path = temp_file, content = content })
 
       -- Clean up the temp file
       vim.api.nvim_buf_delete(temp_buf, { force = true })

@@ -2,13 +2,13 @@
 
 Dogmeat is an all-in-one AI companion for Neovim.
 
-Not the smartest tool in the shed.
+Not the smartest tool in the shed, but:
 - It stays out of your way and helps when called.
-- Perfect for fetching quests.
-- Never judge you.
+- It loves fetching quests.
+- It never judge you.
 - Good boy.
 
-__An homage to the most iconic Fallout's companion__
+__An homage to the most iconic Fallout's companion 🐕__
 
 ## Features
 

@@ -37,7 +37,7 @@ local args = {
 }
 
 --- Command builder
---- @param opts AichatConfigs The configurations to be used
+--- @param opts? AichatConfigs The configurations to be used
 --- @return AichatConfigs The updated configurations
 M.new = function(self, opts)
   args = {}
@@ -92,37 +92,39 @@ end
 -- Build the command
 -- @return table<string> The command to be executed
 function M.to_command()
-  local command = { }
+  local command = {
+    M.configs.aichat_bin,
+  }
+
+  if args.code then
+    table.insert(command, "--code")
+  end
 
   if args.macro_name then
     table.insert(command, "--macro")
-    table.insert(command, vim.fn.shellescape(args.macro_name))
+    table.insert(command, args.macro_name)
   end
 
   if args.model then
     table.insert(command, "--model")
-    table.insert(command, vim.fn.shellescape(args.model))
+    table.insert(command, args.model)
   end
 
   if args.role then
     table.insert(command, "--role")
-    table.insert(command, vim.fn.shellescape(args.role))
+    table.insert(command, args.role)
   end
 
   if args.files then
     for _, file in ipairs(args.files) do
       table.insert(command, "--file")
-      table.insert(command, vim.fn.shellescape(file))
+      table.insert(command, file)
     end
   end
 
   if args.prompt then
     table.insert(command, " ")
     table.insert(command, vim.fn.shellescape(args.prompt))
-  end
-
-  if args.code then
-    table.insert(command, "--code")
   end
 
   return command
