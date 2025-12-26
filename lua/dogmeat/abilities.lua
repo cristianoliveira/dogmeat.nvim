@@ -2,6 +2,7 @@ local aichat = require("dogmeat.backends.aichat")
 local runner = require("dogmeat.common.runner")
 local editor = require("dogmeat.common.editor")
 local strings = require("dogmeat.common.strings")
+local aichat_formatter = require("dogmeat.backends.aichat_formatter")
 
 local M = {}
 
@@ -23,6 +24,7 @@ local M = {}
 --- @param opts FetchCodeOptions
 --- @return string | nil The path to the temporary markdown file
 M.fetch_with_markdown = function(opts)
+  local formatter = function(res) return res end
   local on_finish_editing = opts.on_finish
   if not on_finish_editing then
     print("No on_finish callback provided")
@@ -48,6 +50,10 @@ M.fetch_with_markdown = function(opts)
       return
     end
 
+    if opts.macro then
+      formatter = aichat_formatter.format_macro_output
+    end
+
     local cmd = builder
       :add_file(instructions_file)
       :prompt(
@@ -68,7 +74,7 @@ M.fetch_with_markdown = function(opts)
 
         on_finish_editing({
           path = instructions_file,
-          content = strings.split(res.stdout),
+          content = formatter(strings.split(res.stdout)),
         })
       end,
 
@@ -85,10 +91,15 @@ end
 --- @param instructions string The instructions to be used
 --- @param opts FetchCodeOptions
 M.fetch_with_instructions = function(instructions, opts)
+  local formatter = function(res) return res end
   local on_finish = opts.on_finish
   if not on_finish then
     print("No on_finish callback provided")
     return nil
+  end
+
+  if opts.macro then
+    formatter = aichat_formatter.format_macro_output
   end
 
   local cmd = aichat:new()
@@ -110,7 +121,7 @@ M.fetch_with_instructions = function(instructions, opts)
         return
       end
 
-      on_finish({ content = strings.split(res.stdout) })
+      on_finish({ content = formatter(strings.split(res.stdout)) })
     end,
 
     on_error = function(stderr, _)
