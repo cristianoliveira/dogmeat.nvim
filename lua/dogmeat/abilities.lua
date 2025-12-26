@@ -31,16 +31,6 @@ M.fetch_with_markdown = function(opts)
     return nil
   end
 
-  local builder = aichat:new()
-    :add_file(opts.current_file)
-
-  if opts.code then
-    builder = builder:code(opts.code)
-  end
-
-  if opts.macro then
-    builder = builder:macro(opts.macro)
-  end
 
   editor.tmp_markdown_file(function(resp)
     local instructions_file = resp.path
@@ -54,14 +44,19 @@ M.fetch_with_markdown = function(opts)
       formatter = aichat_formatter.format_macro_output
     end
 
-    local cmd = builder
+    local cmd = aichat:new()
+      :add_file(opts.current_file)
+      :set_macro(opts.macro)
+      :set_model(opts.model)
+      :set_role(opts.role)
       :add_file(instructions_file)
-      :prompt(
+      :set_prompt(
         "Apply the changes in " ..
         opts.current_file ..
         " following the instructions in " ..
         instructions_file
       )
+      :code(opts.code)
       :to_command()
 
     runner.async(cmd, {
@@ -102,18 +97,19 @@ M.fetch_with_instructions = function(instructions, opts)
     formatter = aichat_formatter.format_macro_output
   end
 
-  local builder = aichat:new()
+  local cmd = aichat:new()
     :add_file(opts.current_file)
-    :prompt(
+    :set_macro(opts.macro)
+    :set_model(opts.model)
+    :set_role(opts.role)
+    :set_prompt(
       "Apply the changes in " ..
       opts.current_file ..
       " following the instructions in " ..
       instructions
     )
-    :macro(opts.macro)
     :code(opts.code)
-
-  local cmd = builder:macro(opts.macro)
+    :to_command()
 
   return runner.async(cmd, {
     on_success = function(code, res)

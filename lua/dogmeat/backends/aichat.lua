@@ -7,11 +7,11 @@
 
 --- @class AichatBuilder
 --- @field new fun(self: AichatBuilder, opts?: AichatConfigs): AichatBuilder
---- @field macro fun(self: AichatBuilder, macro_name: string): AichatBuilder
---- @field model fun(self: AichatBuilder, model: string): AichatBuilder
---- @field role fun(self: AichatBuilder, role: string): AichatBuilder
 --- @field file fun(self: AichatBuilder, file: string): AichatBuilder
---- @field prompt fun(self: AichatBuilder, prompt: string): AichatBuilder
+--- @field set_model fun(self: AichatBuilder, model: string): AichatBuilder
+--- @field set_role fun(self: AichatBuilder, role: string): AichatBuilder
+--- @field set_macro fun(self: AichatBuilder, macro_name: string): AichatBuilder
+--- @field set_prompt fun(self: AichatBuilder, prompt: string): AichatBuilder
 --- @field code fun(self: AichatBuilder, code: boolean): AichatBuilder
 --- @field to_command fun(): string[]
 local M = {
@@ -37,7 +37,7 @@ local args = {
 }
 
 --- Command builder
---- @return AichatConfigs The updated configurations
+--- @return AichatBuilder The updated configurations
 M.new = function(self, opts)
   args = {}
   self.configs = vim.tbl_deep_extend("force", M.configs, opts or {})
@@ -54,31 +54,31 @@ M.add_file = function(self, file)
   return self
 end
 
---- Add a role to the command
-M.add_role = function(self, role)
+--- Set a role to the command
+M.set_role = function(self, role)
   args.role = role
   return self
 end
 
 --- Add a model to the command
 ---@param model string The model to be added
-M.add_model = function(self, model)
+M.set_model = function(self, model)
   args.model = model
   return self
 end
 
 --- Set the macro name
 --- @param macro_name string The name of the macro to be executed
-M.macro = function(self, macro_name)
+M.set_macro = function(self, macro_name)
   args.macro_name = macro_name
   return self
 end
 
 --- Set the prompt
 --- @param prompt string The prompt to be used
-M.prompt = function(self, prompt)
+M.set_prompt = function(self, prompt)
   args.prompt = prompt
-  return self or M
+  return self
 end
 
 --- Set the code flag

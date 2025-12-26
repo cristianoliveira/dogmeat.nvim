@@ -3,53 +3,52 @@ local spy = require("luassert.spy")
 
 describe("abilities", function()
   local abilities
-  local aichat_mock
   local runner_mock
   local editor_mock
 
   before_each(function()
-    -- Mock vim.inspect
+    -- Mock vim global (required by aichat builder)
     _G.vim = {
       inspect = function(obj) return tostring(obj) end,
+      fn = {
+        shellescape = function(str) return "'" .. str .. "'" end
+      },
+      tbl_deep_extend = function(behavior, ...)
+        local result = {}
+        for _, tbl in ipairs({...}) do
+          for k, v in pairs(tbl) do
+            if type(v) == "table" and type(result[k]) == "table" then
+              result[k] = vim.tbl_deep_extend(behavior, result[k], v)
+            else
+              result[k] = v
+            end
+          end
+        end
+        return result
+      end
     }
 
-    -- Create aichat builder mock
-    local builder_instance = {
-      add_file = spy.new(function(self) return self end),
-      code = spy.new(function(self) return self end),
-      prompt = spy.new(function(self) return self end),
-      to_command = spy.new(function() return { "aichat", "--code" } end)
-    }
-
-    aichat_mock = {
-      new = spy.new(function()
-        return builder_instance
-      end)
-    }
-
-    -- Mock runner
+    -- Mock runner (side effects: running shell commands)
     runner_mock = {
       async = spy.new(function() end)
     }
 
-    -- Mock editor
+    -- Mock editor (side effects: opening vim windows)
     editor_mock = {
       tmp_markdown_file = spy.new(function() end)
     }
 
-    -- Setup package mocks
-    package.loaded["dogmeat.backends.aichat"] = aichat_mock
+    -- Setup package mocks (only external dependencies)
     package.loaded["dogmeat.common.runner"] = runner_mock
     package.loaded["dogmeat.common.editor"] = editor_mock
 
-    -- Reset and load abilities module
+    -- Reset and load abilities module (uses real aichat builder)
     package.loaded["dogmeat.abilities"] = nil
     abilities = require("dogmeat.abilities")
   end)
 
   after_each(function()
     -- Clean up mocks
-    package.loaded["dogmeat.backends.aichat"] = nil
     package.loaded["dogmeat.common.runner"] = nil
     package.loaded["dogmeat.common.editor"] = nil
     package.loaded["dogmeat.abilities"] = nil
