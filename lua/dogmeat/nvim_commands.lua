@@ -31,8 +31,8 @@ M.setup = function()
     fetch_with_markdown_cmd,
     {
       nargs = 1,
-      complete = function()
-        return dogmeat.skills.list_macros()
+      complete = function(args)
+        return dogmeat.skills.list_macros(args.fargs[1])
       end,
       desc = "Fetch code with macro"
     }
@@ -44,7 +44,7 @@ M.setup = function()
     {
       nargs = 1,
       complete = function()
-        return dogmeat.skills.list_macros()
+        return dogmeat.skills.list_macros(args.fargs[1])
       end,
       desc = "Fetch code with macro - Alias to DMFetchWithMacro"
     }
