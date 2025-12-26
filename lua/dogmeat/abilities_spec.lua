@@ -120,7 +120,7 @@ describe("abilities", function()
       assert.spy(on_finish).was_called()
       assert.spy(on_finish).was_called_with({
         path = "/tmp/instructions.md",
-        content = "refactored code"
+        content = { "refactored code" }
       })
     end)
 
@@ -219,7 +219,7 @@ describe("abilities", function()
 
       assert.spy(on_finish).was_called()
       assert.spy(on_finish).was_called_with({
-        content = "refactored code"
+        content = { "refactored code" }
       })
     end)
 

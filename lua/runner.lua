@@ -1,9 +1,9 @@
 -- runner.lua
 -- Just a helper to run the plugin for development, to use it:
 -- :source %
-local dogmeat = require("dogmeat")
-local editor = require("dogmeat.editor.diff")
-local temp = require("dogmeat.editor.temp")
+-- local dogmeat = require("dogmeat")
+-- local editor = require("dogmeat.editor.diff")
+-- local temp = require("dogmeat.editor.temp")
 local nvim_commands = require("dogmeat.nvim_commands")
 
 nvim_commands.setup()

@@ -1,6 +1,7 @@
 local aichat = require("dogmeat.backends.aichat")
 local runner = require("dogmeat.common.runner")
 local editor = require("dogmeat.common.editor")
+local strings = require("dogmeat.common.strings")
 
 local M = {}
 
@@ -65,7 +66,10 @@ M.fetch_with_markdown = function(opts)
           return
         end
 
-        on_finish_editing({ path = instructions_file, content = res.stdout })
+        on_finish_editing({
+          path = instructions_file,
+          content = strings.split(res.stdout),
+        })
       end,
 
       on_error = function(stderr, _)
@@ -106,7 +110,7 @@ M.fetch_with_instructions = function(instructions, opts)
         return
       end
 
-      on_finish({ content = res.stdout })
+      on_finish({ content = strings.split(res.stdout) })
     end,
 
     on_error = function(stderr, _)
