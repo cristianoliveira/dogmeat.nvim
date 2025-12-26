@@ -102,7 +102,7 @@ M.fetch_with_instructions = function(instructions, opts)
     formatter = aichat_formatter.format_macro_output
   end
 
-  local cmd = aichat:new()
+  local builder = aichat:new()
     :add_file(opts.current_file)
     :prompt(
       "Apply the changes in " ..
@@ -110,8 +110,10 @@ M.fetch_with_instructions = function(instructions, opts)
       " following the instructions in " ..
       instructions
     )
+    :macro(opts.macro)
     :code(opts.code)
-    :to_command()
+
+  local cmd = builder:macro(opts.macro)
 
   return runner.async(cmd, {
     on_success = function(code, res)
