@@ -10,5 +10,6 @@ M.setup = function(opts)
 end
 
 M.go = abilities
+M.skills = require("dogmeat.skills")
 
 return M
