@@ -10,7 +10,7 @@ describe("abilities", function()
   before_each(function()
     -- Mock vim.inspect
     _G.vim = {
-      inspect = function(obj) return tostring(obj) end
+      inspect = function(obj) return tostring(obj) end,
     }
 
     -- Create aichat builder mock
@@ -55,9 +55,9 @@ describe("abilities", function()
     package.loaded["dogmeat.abilities"] = nil
   end)
 
-  describe("fetch_code", function()
+  describe("fetch_with_markdown", function()
     it("returns nil when on_finish callback is missing", function()
-      local result = abilities.fetch_code({
+      local result = abilities.fetch_with_markdown({
         current_file = "/path/to/file.lua"
       })
 
@@ -77,7 +77,7 @@ describe("abilities", function()
       package.loaded["dogmeat.abilities"] = nil
       abilities = require("dogmeat.abilities")
 
-      abilities.fetch_code({
+      abilities.fetch_with_markdown({
         on_finish = on_finish,
         current_file = "/path/to/file.lua"
       })
@@ -91,7 +91,7 @@ describe("abilities", function()
       assert.spy(runner_mock.async).was_not_called()
     end)
 
-    it("calls on_finish with success result when code is 0", function()
+    it("calls on_finish with success result when code is 1", function()
       local on_finish = spy.new(function() end)
       local editor_callback = nil
       local runner_callbacks = nil
@@ -104,7 +104,7 @@ describe("abilities", function()
       package.loaded["dogmeat.abilities"] = nil
       abilities = require("dogmeat.abilities")
 
-      abilities.fetch_code({
+      abilities.fetch_with_markdown({
         on_finish = on_finish,
         current_file = "/path/to/file.lua"
       })
@@ -137,7 +137,7 @@ describe("abilities", function()
       package.loaded["dogmeat.abilities"] = nil
       abilities = require("dogmeat.abilities")
 
-      abilities.fetch_code({
+      abilities.fetch_with_markdown({
         on_finish = on_finish,
         current_file = "/path/to/file.lua"
       })
@@ -168,7 +168,7 @@ describe("abilities", function()
       package.loaded["dogmeat.abilities"] = nil
       abilities = require("dogmeat.abilities")
 
-      abilities.fetch_code({
+      abilities.fetch_with_markdown({
         on_finish = on_finish,
         current_file = "/path/to/file.lua"
       })
@@ -188,9 +188,9 @@ describe("abilities", function()
     end)
   end)
 
-  describe("fetch_code_with_instruction", function()
+  describe("fetch_with_instructions", function()
     it("returns nil when on_finish callback is missing", function()
-      local result = abilities.fetch_code_with_instruction("Refactor this", {
+      local result = abilities.fetch_with_instructions("Refactor this", {
         current_file = "/path/to/file.lua"
       })
 
@@ -209,7 +209,7 @@ describe("abilities", function()
       package.loaded["dogmeat.abilities"] = nil
       abilities = require("dogmeat.abilities")
 
-      abilities.fetch_code_with_instruction("Refactor this code", {
+      abilities.fetch_with_instructions("Refactor this code", {
         on_finish = on_finish,
         current_file = "/path/to/file.lua"
       })
@@ -235,7 +235,7 @@ describe("abilities", function()
       package.loaded["dogmeat.abilities"] = nil
       abilities = require("dogmeat.abilities")
 
-      abilities.fetch_code_with_instruction("Refactor this code", {
+      abilities.fetch_with_instructions("Refactor this code", {
         on_finish = on_finish,
         current_file = "/path/to/file.lua"
       })
@@ -260,7 +260,7 @@ describe("abilities", function()
       package.loaded["dogmeat.abilities"] = nil
       abilities = require("dogmeat.abilities")
 
-      abilities.fetch_code_with_instruction("Refactor this code", {
+      abilities.fetch_with_instructions("Refactor this code", {
         on_finish = on_finish,
         current_file = "/path/to/file.lua"
       })

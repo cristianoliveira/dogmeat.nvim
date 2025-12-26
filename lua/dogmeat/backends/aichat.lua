@@ -126,6 +126,12 @@ function M.to_command()
     table.insert(command, vim.fn.shellescape(args.prompt))
   end
 
+  if args.macro_name then
+    -- Ignore the '>> <command>' outputs from aichat
+    table.insert(command, "|")
+    table.insert(command, "sed -e 's/^>>.*$//g'")
+  end
+
   return command
 end
 

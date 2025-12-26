@@ -7,17 +7,21 @@ local M = {}
 --- Callback invoked when the user finishes fetching code
 --- @class OnFinishFetchingCode
 --- @field path? string The path to the temporary markdown file
---- @field content? string The content of the temporary markdown file
+--- @field content? string[] The content of the temporary markdown file
 --- @field errors? string[] The errors that occurred during the fetching process
 
 --- @class FetchCodeOptions
 --- @field on_finish fun(resp: OnFinishFetchingCode) Callback invoked when the user finishes fetching code
 --- @field current_file? string The path to the current file
+--- @field macro? string The macro to be used
+--- @field model? string The model to be used
+--- @field role? string The role to be used
+--- @field code? boolean Whether to stream the output code only
 
---- Go fetch code from aichat
+--- Go fetch but open a temporary markdown file for instructions
 --- @param opts FetchCodeOptions
 --- @return string | nil The path to the temporary markdown file
-M.fetch_code = function(opts)
+M.fetch_with_markdown = function(opts)
   local on_finish_editing = opts.on_finish
   if not on_finish_editing then
     print("No on_finish callback provided")
@@ -26,7 +30,14 @@ M.fetch_code = function(opts)
 
   local builder = aichat:new()
     :add_file(opts.current_file)
-    :code(true)
+
+  if opts.code then
+    builder = builder:code(opts.code)
+  end
+
+  if opts.macro then
+    builder = builder:macro(opts.macro)
+  end
 
   editor.tmp_markdown_file(function(resp)
     local instructions_file = resp.path
@@ -46,7 +57,6 @@ M.fetch_code = function(opts)
       )
       :to_command()
 
-    print(vim.inspect(cmd))
     runner.async(cmd, {
       on_success = function(code, res)
         if code ~= 0 then
@@ -55,10 +65,7 @@ M.fetch_code = function(opts)
           return
         end
 
-        on_finish_editing({
-          path = instructions_file,
-          content = res.stdout,
-        })
+        on_finish_editing({ path = instructions_file, content = res.stdout })
       end,
 
       on_error = function(stderr, _)
@@ -69,14 +76,11 @@ M.fetch_code = function(opts)
   end)
 end
 
---- @class FetchCodeWithInstructionOptions
---- @field on_finish fun(resp: OnFinishFetchingCode) Callback invoked when the user finishes fetching code
---- @field current_file? string The path to the current file
 
 --- Go fetch code from aichat with instruction (no mardown file)
 --- @param instructions string The instructions to be used
---- @param opts FetchCodeWithInstructionOptions
-M.fetch_code_with_instruction = function(instructions, opts)
+--- @param opts FetchCodeOptions
+M.fetch_with_instructions = function(instructions, opts)
   local on_finish = opts.on_finish
   if not on_finish then
     print("No on_finish callback provided")
@@ -91,7 +95,7 @@ M.fetch_code_with_instruction = function(instructions, opts)
       " following the instructions in " ..
       instructions
     )
-    :code(true)
+    :code(opts.code)
     :to_command()
 
   return runner.async(cmd, {
@@ -101,9 +105,8 @@ M.fetch_code_with_instruction = function(instructions, opts)
         on_finish({ errors = { res.stdout, res.stderr } })
         return
       end
-      on_finish({
-        content = res.stdout,
-      })
+
+      on_finish({ content = res.stdout })
     end,
 
     on_error = function(stderr, _)
@@ -111,6 +114,21 @@ M.fetch_code_with_instruction = function(instructions, opts)
       on_finish({ errors = { stderr } })
     end,
   })
+end
+
+--- @class GoFetchTextOptions
+--- @field on_finish fun(resp: OnFinishFetchingCode) Callback invoked when the user finishes fetching code
+--- @field current_file? string The path to the current file
+
+--- Go fetch code from aichat
+--- @param opts GoFetchTextOptions
+--- @return string | nil The path to the temporary markdown file
+M.go_fetch_text = function(opts)
+  local on_finish_editing = opts.on_finish
+  if not on_finish_editing then
+    print("No on_finish callback provided")
+    return nil
+  end
 end
 
 return M
