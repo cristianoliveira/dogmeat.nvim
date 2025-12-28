@@ -45,15 +45,15 @@ local fetch_with_instruction = function(opts)
 end
 
 local fetch_code_with_markdown = function()
+  local current_file = vim.fn.expand("%:p")
   dogmeat.go.fetch_with_markdown({
-    current_file = vim.fn.expand("%:p"),
+    current_file = current_file,
     role = "code-patch",
     code = true,
 
     on_finish = function(resp)
-      print('@@@@@@@@@  resp.path',  resp.path)
       editor.diff.diff_buffer({
-        current_file = vim.fn.expand("%:p"),
+        current_file = current_file,
         file_with_changes = resp.path,
         open_in_tab = true,
       })
