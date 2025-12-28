@@ -57,7 +57,6 @@ describe("abilities", function()
 
     -- Reset and load abilities module (uses real aichat builder, strings, formatter)
     package.loaded["dogmeat.backends.aichat"] = nil
-    package.loaded["dogmeat.common.strings"] = nil
     package.loaded["dogmeat.backends.aichat_formatter"] = nil
     package.loaded["dogmeat.abilities"] = nil
     abilities = require("dogmeat.abilities")
@@ -67,7 +66,6 @@ describe("abilities", function()
     -- Clean up mocks
     package.loaded["dogmeat.backends.aichat"] = nil
     package.loaded["dogmeat.common.runner"] = nil
-    package.loaded["dogmeat.common.strings"] = nil
     package.loaded["dogmeat.backends.aichat_formatter"] = nil
     package.loaded["dogmeat.editor"] = nil
     package.loaded["dogmeat.abilities"] = nil
@@ -115,6 +113,7 @@ describe("abilities", function()
       local runner_callbacks = nil
 
       editor_mock.temp.markdown_file = spy.new(function(cb) editor_callback = cb end)
+      editor_mock.temp.create_temp_file = spy.new(function(cb) return "/tmp/tmpfile.txt" end)
       runner_mock.async = spy.new(function(cmd, cbs) runner_callbacks = cbs end)
 
       package.loaded["dogmeat.editor"] = editor_mock
@@ -137,8 +136,8 @@ describe("abilities", function()
 
       assert.spy(on_finish).was_called()
       assert.spy(on_finish).was_called_with({
-        path = "/tmp/instructions.md",
-        content = { "refactored code" }
+        content = { "refactored code" },
+        path = "/tmp/tmpfile.txt",
       })
     end)
 

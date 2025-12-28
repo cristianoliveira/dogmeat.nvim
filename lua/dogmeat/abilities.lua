@@ -32,9 +32,9 @@ M.fetch_with_markdown = function(opts)
   end
 
 
-  editor.temp.markdown_file(function(resp)
-    local instructions_file = resp.path
-    local content = resp.content
+  editor.temp.markdown_file(function(tmpmd)
+    local instructions_file = tmpmd.path
+    local content = tmpmd.content
     if not instructions_file or not content then
       print("No temp file or content provided")
       return
@@ -67,9 +67,15 @@ M.fetch_with_markdown = function(opts)
           return
         end
 
-        on_finish_editing({
-          path = resp.path,
+        local content_as_table = strings.split(res.stdout)
+        local temp_file = editor.temp.create_temp_file({
+          ext = "diff",
           content = formatter(strings.split(res.stdout)),
+        })
+
+        on_finish_editing({
+          path = temp_file,
+          content = content_as_table,
         })
       end,
 
