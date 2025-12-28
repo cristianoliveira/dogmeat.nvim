@@ -1,6 +1,6 @@
 local aichat = require("dogmeat.backends.aichat")
 local runner = require("dogmeat.common.runner")
-local editor = require("dogmeat.common.editor")
+local editor = require("dogmeat.editor")
 local strings = require("dogmeat.common.strings")
 local aichat_formatter = require("dogmeat.backends.aichat_formatter")
 
@@ -32,7 +32,7 @@ M.fetch_with_markdown = function(opts)
   end
 
 
-  editor.tmp_markdown_file(function(resp)
+  editor.temp.markdown_file(function(resp)
     local instructions_file = resp.path
     local content = resp.content
     if not instructions_file or not content then
@@ -46,10 +46,10 @@ M.fetch_with_markdown = function(opts)
 
     local cmd = aichat:new()
       :add_file(opts.current_file)
+      :add_file(instructions_file)
       :set_macro(opts.macro)
       :set_model(opts.model)
       :set_role(opts.role)
-      :add_file(instructions_file)
       :set_prompt(
         "Apply the changes in " ..
         opts.current_file ..
@@ -68,7 +68,7 @@ M.fetch_with_markdown = function(opts)
         end
 
         on_finish_editing({
-          path = instructions_file,
+          path = resp.path,
           content = formatter(strings.split(res.stdout)),
         })
       end,

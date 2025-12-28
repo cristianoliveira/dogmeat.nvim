@@ -1,4 +1,3 @@
-local assert = require("luassert")
 local spy = require("luassert.spy")
 
 describe("abilities", function()
@@ -11,8 +10,20 @@ describe("abilities", function()
     _G.vim = {
       inspect = function(obj) return tostring(obj) end,
       fn = {
-        shellescape = function(str) return "'" .. str .. "'" end
+        shellescape = function(str) return "'" .. str .. "'" end,
+        tempname = function() return "/tmp/nvim.test.tmp" end,
+        bufadd = function(name) return 1 end,
+        bufload = function(buf) end,
       },
+      api = {
+        nvim_create_augroup = function(name, opts) end,
+        nvim_create_autocmd = function(event, opts) end,
+        nvim_buf_set_option = function(buf, name, value) end,
+        nvim_buf_set_lines = function(buf, start, finish, strict, lines) end,
+        nvim_win_set_buf = function(win, buf) end,
+        nvim_win_set_cursor = function(win, pos) end,
+      },
+      cmd = function(cmd) end,
       tbl_deep_extend = function(behavior, ...)
         local result = {}
         for _, tbl in ipairs({...}) do
@@ -35,22 +46,30 @@ describe("abilities", function()
 
     -- Mock editor (side effects: opening vim windows)
     editor_mock = {
-      tmp_markdown_file = spy.new(function() end)
+      temp = {
+        markdown_file = spy.new(function() end)
+      }
     }
 
     -- Setup package mocks (only external dependencies)
     package.loaded["dogmeat.common.runner"] = runner_mock
-    package.loaded["dogmeat.common.editor"] = editor_mock
+    package.loaded["dogmeat.editor"] = editor_mock
 
-    -- Reset and load abilities module (uses real aichat builder)
+    -- Reset and load abilities module (uses real aichat builder, strings, formatter)
+    package.loaded["dogmeat.backends.aichat"] = nil
+    package.loaded["dogmeat.common.strings"] = nil
+    package.loaded["dogmeat.backends.aichat_formatter"] = nil
     package.loaded["dogmeat.abilities"] = nil
     abilities = require("dogmeat.abilities")
   end)
 
   after_each(function()
     -- Clean up mocks
+    package.loaded["dogmeat.backends.aichat"] = nil
     package.loaded["dogmeat.common.runner"] = nil
-    package.loaded["dogmeat.common.editor"] = nil
+    package.loaded["dogmeat.common.strings"] = nil
+    package.loaded["dogmeat.backends.aichat_formatter"] = nil
+    package.loaded["dogmeat.editor"] = nil
     package.loaded["dogmeat.abilities"] = nil
   end)
 
@@ -61,18 +80,18 @@ describe("abilities", function()
       })
 
       assert.is_nil(result)
-      assert.spy(editor_mock.tmp_markdown_file).was_not_called()
+      assert.spy(editor_mock.temp.markdown_file).was_not_called()
     end)
 
     it("does not proceed if instructions file is missing", function()
       local on_finish = spy.new(function() end)
       local editor_callback = nil
 
-      editor_mock.tmp_markdown_file = spy.new(function(cb)
+      editor_mock.temp.markdown_file = spy.new(function(cb)
         editor_callback = cb
       end)
 
-      package.loaded["dogmeat.common.editor"] = editor_mock
+      package.loaded["dogmeat.editor"] = editor_mock
       package.loaded["dogmeat.abilities"] = nil
       abilities = require("dogmeat.abilities")
 
@@ -95,10 +114,10 @@ describe("abilities", function()
       local editor_callback = nil
       local runner_callbacks = nil
 
-      editor_mock.tmp_markdown_file = spy.new(function(cb) editor_callback = cb end)
+      editor_mock.temp.markdown_file = spy.new(function(cb) editor_callback = cb end)
       runner_mock.async = spy.new(function(cmd, cbs) runner_callbacks = cbs end)
 
-      package.loaded["dogmeat.common.editor"] = editor_mock
+      package.loaded["dogmeat.editor"] = editor_mock
       package.loaded["dogmeat.common.runner"] = runner_mock
       package.loaded["dogmeat.abilities"] = nil
       abilities = require("dogmeat.abilities")
@@ -128,10 +147,10 @@ describe("abilities", function()
       local editor_callback = nil
       local runner_callbacks = nil
 
-      editor_mock.tmp_markdown_file = spy.new(function(cb) editor_callback = cb end)
+      editor_mock.temp.markdown_file = spy.new(function(cb) editor_callback = cb end)
       runner_mock.async = spy.new(function(cmd, cbs) runner_callbacks = cbs end)
 
-      package.loaded["dogmeat.common.editor"] = editor_mock
+      package.loaded["dogmeat.editor"] = editor_mock
       package.loaded["dogmeat.common.runner"] = runner_mock
       package.loaded["dogmeat.abilities"] = nil
       abilities = require("dogmeat.abilities")
@@ -159,10 +178,10 @@ describe("abilities", function()
       local editor_callback = nil
       local runner_callbacks = nil
 
-      editor_mock.tmp_markdown_file = spy.new(function(cb) editor_callback = cb end)
+      editor_mock.temp.markdown_file = spy.new(function(cb) editor_callback = cb end)
       runner_mock.async = spy.new(function(cmd, cbs) runner_callbacks = cbs end)
 
-      package.loaded["dogmeat.common.editor"] = editor_mock
+      package.loaded["dogmeat.editor"] = editor_mock
       package.loaded["dogmeat.common.runner"] = runner_mock
       package.loaded["dogmeat.abilities"] = nil
       abilities = require("dogmeat.abilities")
