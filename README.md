@@ -16,3 +16,8 @@ __An homage to the most iconic Fallout's companion 🐕__
 - Highly customizable
     - Roles: to predefine context for code completion
     - Macros: for automating repetitive tasks
+- AI agents for most common code agents like codex, claude, opencode, crush, etc.
+
+## WIP
+
+This is a working in progress. I still don't know the end goal of the project I just want to structure the way I use AI and AI agents in Neovim.
