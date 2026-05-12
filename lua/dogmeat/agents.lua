@@ -5,6 +5,10 @@ local agents = {
     name = "codex",
     bin = "codex",
   },
+  {
+    name = "opencode",
+    bin = "opencode",
+  }
 }
 
 local M = {}
